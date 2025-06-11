@@ -1,0 +1,15 @@
+[workspace]
+members = [
+    "crates/urine",
+    "crates/screencap",
+    "crates/grid-ocr",
+    "crates/word-suggest",
+    "crates/word_player_shared"
+]
+resolver = "2"
+
+[profile.dev]
+debug = true
+
+[profile.release]
+debug = true

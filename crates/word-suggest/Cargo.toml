@@ -1,0 +1,17 @@
+[package]
+name = "word-suggest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+word_player_shared = { path = "../word_player_shared" }
+
+[lib]
+path = "lib.rs"
+
+[[bin]]
+name = "word-suggest"
+path = "main.rs"
