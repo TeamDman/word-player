@@ -1,10 +1,9 @@
-use bevy::app::AppExit;
+use crate::world_cursor_plugin::CursorPosition;
 use bevy::input::mouse::MouseButton;
 use bevy::input::ButtonInput;
 use bevy::math::IRect;
 use bevy::math::IVec2;
 use bevy::prelude::*;
-use crate::world_cursor_plugin::CursorPosition;
 
 #[derive(Resource, Debug, Clone, Reflect)]
 #[reflect(Resource)]
@@ -15,8 +14,10 @@ pub enum SelectionState {
     Dragging {
         rect_screen: IRect,
         rect_world: IRect,
-        start_screen: IVec2, // Initial point where drag started
-        start_world: IVec2,  // Initial point where drag started in world coords
+        /// Initial point where drag started
+        start_screen: IVec2, 
+        /// Initial point where drag started in world coords
+        start_world: IVec2,  
     },
     Completed {
         rect_screen: IRect,
@@ -26,7 +27,6 @@ pub enum SelectionState {
 
 fn region_selection_system(
     mut state: ResMut<SelectionState>,
-    mut exit: EventWriter<AppExit>,
     buttons: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
     cursor_position: Res<CursorPosition>,
@@ -82,16 +82,8 @@ fn region_selection_system(
                 }
             }
         }
-        SelectionState::Completed {
-            rect_screen,
-            rect_world,
-        } => {
-            if keys.just_pressed(KeyCode::Enter) || keys.just_pressed(KeyCode::NumpadEnter) {
-                let json_screen = serde_json::to_string(&rect_screen).unwrap();
-                let json_world = serde_json::to_string(&rect_world).unwrap();
-                println!("screen: {json_screen}\nworld: {json_world}");
-                exit.write(AppExit::Success);
-            } else if keys.just_pressed(KeyCode::Escape) {
+        SelectionState::Completed { .. } => {
+            if keys.just_pressed(KeyCode::Escape) {
                 *state = SelectionState::NotStarted;
             } else if buttons.just_pressed(MouseButton::Left) {
                 let start_screen =
@@ -109,7 +101,6 @@ fn region_selection_system(
             }
         }
     }
-    info!("SelectionState: {:?}", *state);
 }
 
 pub struct RegionSelectionPlugin;

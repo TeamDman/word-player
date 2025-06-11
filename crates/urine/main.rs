@@ -11,6 +11,7 @@ mod exit_on_esc;
 mod prompt_draw_plugin;
 mod region_selection_overlay_plugin;
 mod region_selection_plugin;
+mod region_selection_return_plugin;
 mod setup_windows;
 mod world_cursor_plugin;
 mod world_cursor_text_plugin;
@@ -39,6 +40,7 @@ fn main() {
         .add_plugins(SetupWindowsPlugin)
         .add_plugins(ExitOnEscPlugin)
         .add_plugins(region_selection_plugin::RegionSelectionPlugin)
+        .add_plugins(region_selection_return_plugin::RegionSelectionReturnPlugin)
         .add_plugins(region_selection_overlay_plugin::RegionSelectionOverlayPlugin)
         .add_plugins(prompt_draw_plugin::PromptDrawPlugin)
         .add_plugins(dimmer_plugin::DimmerPlugin)
