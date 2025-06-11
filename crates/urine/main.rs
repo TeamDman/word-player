@@ -1,15 +1,18 @@
+use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
-use bevy_inspector_egui::bevy_egui::EguiPlugin;
+use bevy_inspector_egui::bevy_egui::{EguiGlobalSettings, EguiPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use clap::Parser;
 use exit_on_esc::ExitOnEscPlugin;
 use setup_windows::SetupWindowsPlugin;
+use world_inspector_plugin::YMBWorldInspectorPlugin;
 
 mod exit_on_esc;
 mod prompt_draw_plugin;
 mod region_selection_plugin;
 mod setup_windows;
 mod dimmer_plugin;
+mod world_inspector_plugin;
 
 /// User Region Identification and Naming Exosystem
 #[derive(Parser, Debug, Resource)]
@@ -40,6 +43,9 @@ fn main() {
         .add_plugins(EguiPlugin {
             enable_multipass_for_primary_context: true,
         })
-        .add_plugins(WorldInspectorPlugin::new())
+        .add_systems(Startup, |mut config: ResMut<EguiGlobalSettings>| {
+            // config.enable_absorb_bevy_input_system = true
+        })
+        .add_plugins(YMBWorldInspectorPlugin)
         .run();
 }

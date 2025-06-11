@@ -93,7 +93,6 @@ fn update_selection_overlay(
         let max = Vec2::new(start.x.max(end.x), start.y.max(end.y));
         let size = max - min;
         let rect_color = Color::srgba(0.2, 0.5, 1.0, 0.3); // translucent blue
-        let text_color = Color::WHITE;
         let text = format!("x: {:.0}, y: {:.0}, w: {:.0}, h: {:.0}", min.x, min.y, size.x, size.y);
         let mut found_overlay = false;
         if let Ok((_entity, mut sprite, mut transform, _)) = overlay_query.single_mut() {

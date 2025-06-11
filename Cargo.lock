@@ -817,6 +817,7 @@ dependencies = [
  "bevy_input",
  "bevy_log",
  "bevy_math",
+ "bevy_picking",
  "bevy_platform",
  "bevy_reflect",
  "bevy_render",
@@ -833,6 +834,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
+ "webbrowser",
  "wgpu-types",
  "winit",
 ]
@@ -2978,6 +2980,15 @@ name = "hexf-parse"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
+
+[[package]]
+name = "home"
+version = "0.5.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "589533453244b0995c858700322199b2becb13b627df2851f64a2775d024abcf"
+dependencies = [
+ "windows-sys 0.59.0",
+]
 
 [[package]]
 name = "http"
@@ -5857,6 +5868,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
+ "bevy_egui",
  "clap",
  "serde",
  "serde_json",
@@ -6184,6 +6196,23 @@ checksum = "5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "webbrowser"
+version = "1.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d5df295f8451142f1856b1bd86a606dfe9587d439bc036e319c827700dbd555e"
+dependencies = [
+ "core-foundation 0.10.1",
+ "home",
+ "jni",
+ "log",
+ "ndk-context",
+ "objc2 0.6.1",
+ "objc2-foundation 0.3.1",
+ "url",
+ "web-sys",
 ]
 
 [[package]]
