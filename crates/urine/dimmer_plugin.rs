@@ -19,7 +19,11 @@ fn spawn_dimmers(mut commands: Commands, monitors: Query<&Monitor>) {
                 custom_size: Some(size),
                 ..default()
             },
-            Transform::from_translation(Vec3::new(position.x + size.x / 2.0, -(position.y + size.y / 2.0), 0.0)),
+            Transform::from_translation(Vec3::new(
+                position.x + size.x / 2.0,
+                -(position.y + size.y / 2.0),
+                0.0,
+            )),
             Name::new("Dimmer Overlay"),
         ));
     }

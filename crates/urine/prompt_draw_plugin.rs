@@ -19,7 +19,7 @@ fn prompt_draw_system(
             let position = monitor.physical_position.as_vec2();
             let size = monitor.physical_size().as_vec2();
             // Top left in world space, inverting y
-            let text_x = position.x + size.x/2.0;
+            let text_x = position.x + size.x / 2.0;
             let text_y = -(position.y + 100.0);
             commands.spawn((
                 Text2d::new(prompt),

@@ -2,13 +2,14 @@ use bevy::app::MainSchedulePlugin;
 use bevy::ecs::schedule::ScheduleLabel;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bevy_inspector_egui::DefaultInspectorConfigPlugin;
 use bevy_inspector_egui::bevy_egui::EguiContext;
 use bevy_inspector_egui::bevy_egui::EguiMultipassSchedule;
 use bevy_inspector_egui::bevy_egui::EguiPlugin;
 use bevy_inspector_egui::bevy_inspector;
 use bevy_inspector_egui::egui;
+use bevy_inspector_egui::DefaultInspectorConfigPlugin;
 
+#[allow(dead_code)]
 #[derive(Event, Debug, Clone)]
 pub enum WorldInspectorWindowEvent {
     SpawnWindow,
@@ -27,9 +28,12 @@ impl Plugin for YMBWorldInspectorPlugin {
         app.add_systems(Update, handle_spawn_window_event);
         app.add_systems(Update, handle_despawn_window_event);
         app.add_systems(Update, handle_toggle_window_event);
-        app.add_systems(Startup, |mut events: EventWriter<WorldInspectorWindowEvent>| {
-            events.write(WorldInspectorWindowEvent::SpawnWindow);
-        });
+        app.add_systems(
+            Startup,
+            |mut events: EventWriter<WorldInspectorWindowEvent>| {
+                events.write(WorldInspectorWindowEvent::SpawnWindow);
+            },
+        );
     }
 }
 

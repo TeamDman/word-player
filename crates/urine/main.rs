@@ -1,17 +1,17 @@
-use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
-use bevy_inspector_egui::bevy_egui::{EguiGlobalSettings, EguiPlugin};
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::bevy_egui::EguiGlobalSettings;
+use bevy_inspector_egui::bevy_egui::EguiPlugin;
 use clap::Parser;
 use exit_on_esc::ExitOnEscPlugin;
 use setup_windows::SetupWindowsPlugin;
 use world_inspector_plugin::YMBWorldInspectorPlugin;
 
+mod dimmer_plugin;
 mod exit_on_esc;
 mod prompt_draw_plugin;
+mod region_selection_overlay_plugin;
 mod region_selection_plugin;
 mod setup_windows;
-mod dimmer_plugin;
 mod world_cursor_plugin; // Added
 mod world_cursor_text_plugin; // Added
 mod world_inspector_plugin;
@@ -40,6 +40,7 @@ fn main() {
         .add_plugins(SetupWindowsPlugin)
         .add_plugins(ExitOnEscPlugin)
         .add_plugins(region_selection_plugin::RegionSelectionPlugin)
+        .add_plugins(region_selection_overlay_plugin::RegionSelectionOverlayPlugin)
         .add_plugins(prompt_draw_plugin::PromptDrawPlugin)
         .add_plugins(dimmer_plugin::DimmerPlugin)
         .add_plugins(world_cursor_plugin::WorldCursorPlugin) // Added
@@ -47,7 +48,7 @@ fn main() {
         .add_plugins(EguiPlugin {
             enable_multipass_for_primary_context: true,
         })
-        .add_systems(Startup, |mut config: ResMut<EguiGlobalSettings>| {
+        .add_systems(Startup, |_config: ResMut<EguiGlobalSettings>| {
             // config.enable_absorb_bevy_input_system = true
         })
         .add_plugins(YMBWorldInspectorPlugin)
