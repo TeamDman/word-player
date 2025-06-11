@@ -7,6 +7,8 @@ use bevy::math::Vec2;
 use bevy::prelude::*;
 use bevy::window::Window;
 
+use crate::world_cursor_plugin::WorldCursorPosition; // Added import
+
 #[derive(Resource, Default)]
 pub struct SelectionState {
     pub start: Option<Vec2>,
@@ -25,35 +27,38 @@ fn region_selection_system(
     mut exit: EventWriter<AppExit>,
     buttons: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
-    windows: Query<&Window>,
-    cameras: Query<(&Camera, &GlobalTransform)>,
+    windows: Query<&Window>, // Keep for screen coordinate conversion for output
+    world_cursor_position: Res<WorldCursorPosition>, // Added
 ) {
-    let mut found_cursor = false;
-    let (camera, camera_transform) = match cameras.iter().next() {
-        Some(pair) => pair,
-        None => return,
-    };
-    for window in windows.iter() {
-        if let Some(pos) = window.cursor_position() {
-            found_cursor = true;
-            // Convert from screen (window) coords to world coords (flip Y)
-            let window_height = window.resolution.height();
-            let flipped_pos = Vec2::new(pos.x, window_height - pos.y);
-            if let Ok(world_pos) = camera.viewport_to_world_2d(camera_transform, flipped_pos) {
-                if buttons.just_pressed(MouseButton::Left) {
-                    // Start new selection, clobber any previous
-                    state.start = Some(world_pos);
-                    state.end = Some(world_pos);
-                    state.finalized = false;
-                } else if buttons.pressed(MouseButton::Left) {
-                    state.end = Some(world_pos);
-                } else if buttons.just_released(MouseButton::Left) {
-                    state.end = Some(world_pos);
-                    // Do not finalize here
-                }
-            }
+    // Remove direct camera and window iteration for cursor position
+    // let mut found_cursor = false;
+    // let (camera, camera_transform) = match cameras.iter().next() {
+    //     Some(pair) => pair,
+    //     None => return,
+    // };
+    // for window in windows.iter() {
+    //     if let Some(pos) = window.cursor_position() {
+    //         found_cursor = true;
+    //         // Convert from screen (window) coords to world coords (flip Y)
+    //         let window_height = window.resolution.height();
+    //         let flipped_pos = Vec2::new(pos.x, window_height - pos.y);
+    //         if let Ok(world_pos) = camera.viewport_to_world_2d(camera_transform, flipped_pos) {
+
+    if let Some(world_pos) = world_cursor_position.0 { // Use the new resource
+        if buttons.just_pressed(MouseButton::Left) {
+            // Start new selection, clobber any previous
+            state.start = Some(world_pos);
+            state.end = Some(world_pos);
+            state.finalized = false;
+        } else if buttons.pressed(MouseButton::Left) {
+            state.end = Some(world_pos);
+        } else if buttons.just_released(MouseButton::Left) {
+            state.end = Some(world_pos);
+            // Do not finalize here
         }
     }
+    //     }
+    // }
     // Finalize only on Enter or NumpadEnter
     if (keys.just_pressed(KeyCode::Enter) || keys.just_pressed(KeyCode::NumpadEnter))
         && state.start.is_some() && state.end.is_some() && !state.finalized {

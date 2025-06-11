@@ -12,6 +12,8 @@ mod prompt_draw_plugin;
 mod region_selection_plugin;
 mod setup_windows;
 mod dimmer_plugin;
+mod world_cursor_plugin; // Added
+mod world_cursor_text_plugin; // Added
 mod world_inspector_plugin;
 
 /// User Region Identification and Naming Exosystem
@@ -40,6 +42,8 @@ fn main() {
         .add_plugins(region_selection_plugin::RegionSelectionPlugin)
         .add_plugins(prompt_draw_plugin::PromptDrawPlugin)
         .add_plugins(dimmer_plugin::DimmerPlugin)
+        .add_plugins(world_cursor_plugin::WorldCursorPlugin) // Added
+        .add_plugins(world_cursor_text_plugin::WorldCursorTextPlugin) // Added
         .add_plugins(EguiPlugin {
             enable_multipass_for_primary_context: true,
         })
