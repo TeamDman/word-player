@@ -1,4 +1,4 @@
-use crate::world_cursor_plugin::CursorPosition;
+use crate::cursor_position_plugin::CursorPosition;
 use bevy::prelude::*;
 use bevy::window::Monitor;
 

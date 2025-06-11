@@ -14,7 +14,7 @@ mod region_selection_overlay_plugin;
 mod region_selection_plugin;
 mod region_selection_return_plugin;
 mod setup_windows;
-mod world_cursor_plugin;
+mod cursor_position_plugin;
 mod world_cursor_text_plugin;
 mod world_inspector_plugin;
 
@@ -51,7 +51,7 @@ fn main() {
         .add_plugins(region_selection_overlay_plugin::RegionSelectionOverlayPlugin)
         .add_plugins(prompt_draw_plugin::PromptDrawPlugin)
         .add_plugins(dimmer_plugin::DimmerPlugin)
-        .add_plugins(world_cursor_plugin::WorldCursorPlugin)
+        .add_plugins(cursor_position_plugin::CursorPositionPlugin)
         .add_plugins(world_cursor_text_plugin::WorldCursorTextPlugin)
         .add_plugins(EguiPlugin {
             enable_multipass_for_primary_context: true,

@@ -15,12 +15,27 @@ impl Plugin for SetupWindowsPlugin {
 }
 
 fn setup_windows(mut commands: Commands, monitors: Query<(Entity, &Monitor)>) {
-    for (i, (_monitor_entity, monitor)) in monitors.iter().enumerate() {
-        let position = monitor.physical_position.as_vec2();
+    // Find the bounding rectangle covering all monitors
+    let mut min_x = f32::INFINITY;
+    let mut min_y = f32::INFINITY;
+    let mut max_x = f32::NEG_INFINITY;
+    let mut max_y = f32::NEG_INFINITY;
+
+    for (_entity, monitor) in monitors.iter() {
+        let pos = monitor.physical_position.as_vec2();
         let size = monitor.physical_size().as_vec2();
+        min_x = min_x.min(pos.x);
+        min_y = min_y.min(pos.y);
+        max_x = max_x.max(pos.x + size.x);
+        max_y = max_y.max(pos.y + size.y);
+    }
+
+    if min_x.is_finite() && min_y.is_finite() && max_x.is_finite() && max_y.is_finite() {
+        let position = Vec2::new(min_x, min_y);
+        let size = Vec2::new(max_x - min_x, max_y - min_y);
         let window_entity = commands
             .spawn(Window {
-                title: format!("urine-region-select-{i}"),
+                title: "urine-region-select-all".to_string(),
                 resolution: (size.x, size.y).into(),
                 position: WindowPosition::At(position.as_ivec2()),
                 mode: WindowMode::Windowed,
@@ -40,7 +55,7 @@ fn setup_windows(mut commands: Commands, monitors: Query<(Entity, &Monitor)>) {
                 -(position.y + size.y / 2.0),
                 999.0,
             )),
-            Name::new(format!("Camera2d for window {i}")),
+            Name::new("Camera2d for all monitors"),
         ));
     }
 }

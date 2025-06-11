@@ -1,4 +1,4 @@
-use crate::world_cursor_plugin::CursorPosition;
+use crate::cursor_position_plugin::CursorPosition;
 use bevy::input::mouse::MouseButton;
 use bevy::input::ButtonInput;
 use bevy::math::IRect;
