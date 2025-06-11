@@ -2,21 +2,27 @@ use bevy::prelude::*;
 // use bevy::render::camera::RenderTarget;
 // use bevy::window::WindowRef;
 
-#[derive(Resource, Default, Debug, Reflect)]
+#[derive(Resource, Debug, Clone, Reflect)]
 #[reflect(Resource)]
-pub struct WorldCursorPosition(pub Option<Vec2>);
+pub enum CursorPosition {
+    None,
+    Some {
+        screen: Vec2,
+        world: Vec2,
+    },
+}
 
-#[derive(Resource, Default, Debug, Reflect)]
-#[reflect(Resource)]
-pub struct ScreenCursorPosition(pub Option<Vec2>);
+impl Default for CursorPosition {
+    fn default() -> Self {
+        CursorPosition::None
+    }
+}
 
 fn update_cursor_positions(
-    mut world_cursor_position: ResMut<WorldCursorPosition>,
-    mut screen_cursor_position: ResMut<ScreenCursorPosition>,
+    mut cursor_position: ResMut<CursorPosition>,
     windows: Query<(Entity, &Window)>,
     monitors: Query<&bevy::window::Monitor>,
 ) {
-    let mut found = false;
     for (_, window) in windows.iter() {
         if let Some(cursor_pos) = window.cursor_position() {
             let monitor = monitors
@@ -27,28 +33,21 @@ fn update_cursor_positions(
             } else {
                 Vec2::ZERO
             };
-            // Screen position: cursor relative to desktop (monitor offset + cursor_pos, Y not flipped)
-            let screen_pos = monitor_offset + cursor_pos;
-            world_cursor_position.0 = Some(Vec2::new(screen_pos.x, -screen_pos.y));
-            screen_cursor_position.0 = Some(screen_pos);
-            found = true;
-            break;
+            let screen = monitor_offset + cursor_pos;
+            let world = Vec2::new(screen.x, -screen.y);
+            *cursor_position = CursorPosition::Some { screen, world };
+            return;
         }
     }
-    if !found {
-        world_cursor_position.0 = None;
-        screen_cursor_position.0 = None;
-    }
+    *cursor_position = CursorPosition::None;
 }
 
 pub struct WorldCursorPlugin;
 
 impl Plugin for WorldCursorPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<WorldCursorPosition>()
-            .init_resource::<ScreenCursorPosition>()
-            .register_type::<WorldCursorPosition>()
-            .register_type::<ScreenCursorPosition>()
+        app.init_resource::<CursorPosition>()
+            .register_type::<CursorPosition>()
             .add_systems(PreUpdate, update_cursor_positions);
     }
 }
