@@ -8,8 +8,20 @@ members = [
 ]
 resolver = "2"
 
-[profile.dev]
-debug = true
+[workspace.package]
+authors = ["TeamDman"]
+repository = "https://github.com/TeamDman/word-player.git"
+edition = "2024"
+license = "MPL-2.0"
+version = "0.1.0"
+
+# Enable max optimizations for dependencies, but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
 
 [profile.release]
-debug = true
+opt-level = "z"   # Optimize for size.
+lto = true
+strip = true      # Automatically strip symbols from the binary.
+codegen-units = 1
+panic = "abort"
