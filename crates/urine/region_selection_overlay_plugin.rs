@@ -1,6 +1,5 @@
-use bevy::prelude::*;
 use crate::region_selection_plugin::SelectionState;
-use crate::world_cursor_plugin::CursorPosition;
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct SelectionOverlay;
@@ -21,7 +20,16 @@ fn update_selection_overlay(
     state: Res<SelectionState>,
 ) {
     match &*state {
-        SelectionState::Dragging { rect_world, rect_screen, .. } | SelectionState::Completed { rect_world, rect_screen, .. } => {
+        SelectionState::Dragging {
+            rect_world,
+            rect_screen,
+            ..
+        }
+        | SelectionState::Completed {
+            rect_world,
+            rect_screen,
+            ..
+        } => {
             // Draw overlay using world coordinates
             let min = rect_world.min.as_vec2();
             let max = rect_world.max.as_vec2();
@@ -36,7 +44,6 @@ fn update_selection_overlay(
                 "screen: x: {:.0}, y: {:.0}, w: {:.0}, h: {:.0}",
                 screen_min.x, screen_min.y, screen_size.x, screen_size.y
             );
-
 
             // Handle Sprite Overlay
             if let Ok((_entity, mut sprite, mut transform)) = sprite_overlay_query.single_mut() {

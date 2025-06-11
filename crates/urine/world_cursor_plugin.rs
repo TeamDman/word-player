@@ -1,21 +1,15 @@
 use bevy::prelude::*;
-// use bevy::render::camera::RenderTarget;
-// use bevy::window::WindowRef;
 
 #[derive(Resource, Debug, Clone, Reflect)]
 #[reflect(Resource)]
+#[derive(Default)]
 pub enum CursorPosition {
+    #[default]
     None,
     Some {
         screen: Vec2,
         world: Vec2,
     },
-}
-
-impl Default for CursorPosition {
-    fn default() -> Self {
-        CursorPosition::None
-    }
 }
 
 fn update_cursor_positions(

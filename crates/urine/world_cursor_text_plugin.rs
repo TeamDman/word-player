@@ -1,6 +1,6 @@
+use crate::world_cursor_plugin::CursorPosition;
 use bevy::prelude::*;
 use bevy::window::Monitor;
-use crate::world_cursor_plugin::CursorPosition;
 
 #[derive(Component)]
 struct WorldCursorText;
@@ -18,10 +18,8 @@ fn setup_world_cursor_text_display(
         let position = monitor.physical_position.as_vec2();
         let size = monitor.physical_size().as_vec2();
 
-        // Position text in the top right of this monitor
-        // Adjusting for world coordinates (Y is inverted from screen coordinates)
-        let text_x = position.x + size.x - 100.0; // 100px from the right edge
-        let text_y = -(position.y + 30.0); // 30px from the top edge (in world space)
+        let text_x = position.x + size.x - 100.0;
+        let text_y = -(position.y + 30.0);
 
         commands.spawn((
             Text2d::new("X: ---, Y: ---"),
@@ -32,7 +30,7 @@ fn setup_world_cursor_text_display(
             },
             TextColor(Color::WHITE),
             TextLayout::new_with_justify(JustifyText::Right),
-            Transform::from_xyz(text_x, text_y, 200.0), // Ensure it's on top
+            Transform::from_xyz(text_x, text_y, 200.0),
             Name::new("World Cursor Text"),
             WorldCursorText,
         ));

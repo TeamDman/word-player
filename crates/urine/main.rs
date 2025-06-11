@@ -12,11 +12,10 @@ mod prompt_draw_plugin;
 mod region_selection_overlay_plugin;
 mod region_selection_plugin;
 mod setup_windows;
-mod world_cursor_plugin; // Added
-mod world_cursor_text_plugin; // Added
+mod world_cursor_plugin;
+mod world_cursor_text_plugin;
 mod world_inspector_plugin;
 
-/// User Region Identification and Naming Exosystem
 #[derive(Parser, Debug, Resource)]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
@@ -34,7 +33,7 @@ fn main() {
         .insert_resource(args)
         .insert_resource(ClearColor(Color::NONE))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: None, // We'll create windows for all monitors
+            primary_window: None,
             ..default()
         }))
         .add_plugins(SetupWindowsPlugin)
@@ -43,8 +42,8 @@ fn main() {
         .add_plugins(region_selection_overlay_plugin::RegionSelectionOverlayPlugin)
         .add_plugins(prompt_draw_plugin::PromptDrawPlugin)
         .add_plugins(dimmer_plugin::DimmerPlugin)
-        .add_plugins(world_cursor_plugin::WorldCursorPlugin) // Added
-        .add_plugins(world_cursor_text_plugin::WorldCursorTextPlugin) // Added
+        .add_plugins(world_cursor_plugin::WorldCursorPlugin)
+        .add_plugins(world_cursor_text_plugin::WorldCursorTextPlugin)
         .add_plugins(EguiPlugin {
             enable_multipass_for_primary_context: true,
         })

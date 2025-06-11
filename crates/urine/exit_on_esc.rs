@@ -11,7 +11,7 @@ impl Plugin for ExitOnEscPlugin {
 }
 
 fn exit_on_esc_system(
-    keys: Res<ButtonInput<KeyCode>>, 
+    keys: Res<ButtonInput<KeyCode>>,
     mut exit: EventWriter<AppExit>,
     selection_state: Option<Res<SelectionState>>,
 ) {

@@ -20,10 +20,9 @@ fn setup_windows(mut commands: Commands, monitors: Query<(Entity, &Monitor)>) {
         let size = monitor.physical_size().as_vec2();
         let window_entity = commands
             .spawn(Window {
-                title: format!("urine-region-select-{}", i),
+                title: format!("urine-region-select-{i}"),
                 resolution: (size.x, size.y).into(),
                 position: WindowPosition::At(position.as_ivec2()),
-                // mode: WindowMode::BorderlessFullscreen(MonitorSelection::Entity(monitor_entity)),
                 mode: WindowMode::Windowed,
                 decorations: false,
                 transparent: true,
@@ -41,7 +40,7 @@ fn setup_windows(mut commands: Commands, monitors: Query<(Entity, &Monitor)>) {
                 -(position.y + size.y / 2.0),
                 999.0,
             )),
-            Name::new(format!("Camera2d for window {}", i)),
+            Name::new(format!("Camera2d for window {i}")),
         ));
     }
 }
