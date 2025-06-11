@@ -5,7 +5,7 @@ members = [
     "crates/grid-ocr",
     "crates/word-suggest",
     "crates/word_player_shared"
-]
+, "crates/pee"]
 resolver = "2"
 
 [workspace.package]

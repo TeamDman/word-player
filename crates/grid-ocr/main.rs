@@ -13,6 +13,7 @@ pub struct Args {
 }
 
 fn main() {
+    color_eyre::install().unwrap();
     let args = Args::parse();
     word_player_shared::init_tracing(args.debug);
     // ...existing code for OCR and LLM interaction will go here...

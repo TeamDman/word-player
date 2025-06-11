@@ -1,0 +1,20 @@
+[package]
+name = "pee"
+description = "Pixel Extraction Engine"
+authors.workspace = true
+repository.workspace = true
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+bevy_math = { version = "0.16.1", features = ["serialize"] }
+clap = { version = "4.5.40", features = ["derive"] }
+color-eyre = "0.6.5"
+eyre = "0.6.12"
+image = { version = "0.25.6", features = ["serde"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+winc = "0.3.0"

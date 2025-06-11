@@ -12,9 +12,14 @@ fn region_selection_return_system(
 ) -> Result {
     if let SelectionState::Completed { rect_screen, .. } = &*state {
         if keys.just_pressed(KeyCode::Enter) || keys.just_pressed(KeyCode::NumpadEnter) {
-            let json_screen = serde_json::to_string(&rect_screen)?;
-            info!("screen coordinates: {json_screen}");
-            println!("{json_screen}");
+            info!("screen coordinates: {rect_screen:?}");
+            println!(
+                "{x} {y} {w} {h}",
+                x = rect_screen.min.x,
+                y = rect_screen.min.y,
+                w = rect_screen.width(),
+                h = rect_screen.height()
+            );
             exit.write(AppExit::Success);
         }
     }
