@@ -21,14 +21,20 @@ fn update_selection_overlay(
     state: Res<SelectionState>,
 ) {
     match &*state {
-        SelectionState::Dragging { rect_screen, rect_world } | SelectionState::Completed { rect_screen, rect_world } => {
+        SelectionState::Dragging { rect_world, rect_screen, .. } | SelectionState::Completed { rect_world, rect_screen, .. } => {
+            // Draw overlay using world coordinates
             let min = rect_world.min.as_vec2();
             let max = rect_world.max.as_vec2();
             let size = max - min;
             let rect_color = Color::srgba(0.2, 0.5, 1.0, 0.3); // translucent blue
+
+            // Display text using screen coordinates
+            let screen_min = rect_screen.min.as_vec2();
+            let screen_max = rect_screen.max.as_vec2();
+            let screen_size = screen_max - screen_min;
             let formatted_text = format!(
-                "x: {:.0}, y: {:.0}, w: {:.0}, h: {:.0}",
-                min.x, min.y, size.x, size.y
+                "screen: x: {:.0}, y: {:.0}, w: {:.0}, h: {:.0}",
+                screen_min.x, screen_min.y, screen_size.x, screen_size.y
             );
 
 
