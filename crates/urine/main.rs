@@ -27,12 +27,15 @@ pub struct Args {
     /// Optional prompt text to display
     #[arg(long)]
     prompt: Option<String>,
+    /// Enable world inspector window
+    #[arg(long)]
+    inspector: bool,
 }
 
 fn main() {
     let args = Args::parse();
-    App::new()
-        .insert_resource(args)
+    let mut app = App::new();
+    app.insert_resource(args)
         .insert_resource(ClearColor(Color::NONE))
         .add_plugins(EmbeddedAssetPlugin {
             mode: bevy_embedded_assets::PluginMode::ReplaceDefault,
@@ -55,7 +58,9 @@ fn main() {
         })
         .add_systems(Startup, |_config: ResMut<EguiGlobalSettings>| {
             // config.enable_absorb_bevy_input_system = true
-        })
-        .add_plugins(YMBWorldInspectorPlugin)
-        .run();
+        });
+    if app.world().resource::<Args>().inspector {
+        app.add_plugins(YMBWorldInspectorPlugin);
+    }
+    app.run();
 }
