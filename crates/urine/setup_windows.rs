@@ -35,6 +35,7 @@ fn setup_windows(mut commands: Commands, monitors: Query<(Entity, &Monitor)>) {
                 ..default()
             },
             Transform::from_translation(Vec3::new(position.x + size.x / 2.0, -(position.y + size.y / 2.0), 999.0)),
+            Name::new(format!("Camera2d for window {}", i)),
         ));
     }
 }

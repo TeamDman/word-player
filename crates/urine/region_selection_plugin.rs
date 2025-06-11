@@ -116,6 +116,7 @@ fn update_selection_overlay(
                 },
                 Transform::from_translation(min.extend(100.0)),
                 SelectionOverlay,
+                Name::new("Selection Overlay Rectangle"),
             ));
         }
         if !found_text {
@@ -123,6 +124,7 @@ fn update_selection_overlay(
                 Text2d::new(text),
                 Transform::from_translation((min + size / 2.0 + Vec2::Y * 20.0).extend(101.0)),
                 SelectionOverlay,
+                Name::new("Selection Overlay Text"),
             ));
         }
     } else {

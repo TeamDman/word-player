@@ -31,6 +31,7 @@ fn prompt_draw_system(
                 TextColor(Color::WHITE),
                 TextLayout::new_with_justify(JustifyText::Left),
                 Transform::from_xyz(text_x, text_y, 1.0),
+                Name::new("Prompt Text2d"),
             ));
         }
     }
