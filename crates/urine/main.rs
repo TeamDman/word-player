@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 use bevy_inspector_egui::bevy_egui::EguiGlobalSettings;
 use bevy_inspector_egui::bevy_egui::EguiPlugin;
 use clap::Parser;
@@ -33,6 +34,9 @@ fn main() {
     App::new()
         .insert_resource(args)
         .insert_resource(ClearColor(Color::NONE))
+        .add_plugins(EmbeddedAssetPlugin {
+            mode: bevy_embedded_assets::PluginMode::ReplaceDefault,
+        })
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: None,
             ..default()

@@ -1,7 +1,7 @@
+use crate::region_selection_plugin::SelectionState;
 use bevy::app::AppExit;
 use bevy::input::ButtonInput;
 use bevy::prelude::*;
-use crate::region_selection_plugin::SelectionState;
 
 pub struct RegionSelectionReturnPlugin;
 

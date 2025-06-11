@@ -15,9 +15,9 @@ pub enum SelectionState {
         rect_screen: IRect,
         rect_world: IRect,
         /// Initial point where drag started
-        start_screen: IVec2, 
+        start_screen: IVec2,
         /// Initial point where drag started in world coords
-        start_world: IVec2,  
+        start_world: IVec2,
     },
     Completed {
         rect_screen: IRect,
