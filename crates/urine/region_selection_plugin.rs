@@ -17,10 +17,14 @@ pub struct SelectionState {
 #[derive(Component)]
 pub struct SelectionOverlay;
 
+#[derive(Component)]
+pub struct SelectionOverlayText; // New marker component for the text
+
 fn region_selection_system(
-    mut state: Local<SelectionState>,
+    mut state: ResMut<SelectionState>,
     mut exit: EventWriter<AppExit>,
     buttons: Res<ButtonInput<MouseButton>>,
+    keys: Res<ButtonInput<KeyCode>>,
     windows: Query<&Window>,
     cameras: Query<(&Camera, &GlobalTransform)>,
 ) {
@@ -37,19 +41,23 @@ fn region_selection_system(
             let flipped_pos = Vec2::new(pos.x, window_height - pos.y);
             if let Ok(world_pos) = camera.viewport_to_world_2d(camera_transform, flipped_pos) {
                 if buttons.just_pressed(MouseButton::Left) {
+                    // Start new selection, clobber any previous
                     state.start = Some(world_pos);
                     state.end = Some(world_pos);
+                    state.finalized = false;
                 } else if buttons.pressed(MouseButton::Left) {
                     state.end = Some(world_pos);
                 } else if buttons.just_released(MouseButton::Left) {
                     state.end = Some(world_pos);
-                    state.finalized = true;
+                    // Do not finalize here
                 }
             }
         }
     }
-    if !found_cursor {
-        // Optionally, clear state or handle no cursor present
+    // Finalize only on Enter or NumpadEnter
+    if (keys.just_pressed(KeyCode::Enter) || keys.just_pressed(KeyCode::NumpadEnter))
+        && state.start.is_some() && state.end.is_some() && !state.finalized {
+        state.finalized = true;
     }
     info!("SelectionState: start={:?}, end={:?}, finalized={}", state.start, state.end, state.finalized);
     if state.finalized {
@@ -73,19 +81,20 @@ fn region_selection_system(
 
 fn update_selection_overlay(
     mut commands: Commands,
-    mut overlay_query: Query<(Entity, &mut Sprite, &mut Transform, Option<&mut Children>), With<SelectionOverlay>>,
-    mut text2d_query: Query<(Entity, &mut Text), With<SelectionOverlay>>,
-    state: Local<SelectionState>,
+    asset_server: Res<AssetServer>, // Added AssetServer
+    mut sprite_overlay_query: Query<(Entity, &mut Sprite, &mut Transform), (With<SelectionOverlay>, Without<SelectionOverlayText>)>,
+    mut text_overlay_query: Query<(Entity, &mut Text2d, &mut Transform), With<SelectionOverlayText>>, // Changed Text to Text2d
+    state: Res<SelectionState>,
 ) {
-    // Only show overlay while dragging (not finalized)
     if let (Some(start), Some(end)) = (state.start, state.end) {
         if state.finalized {
-            // Remove overlay if present
-            for (entity, _, _, _) in overlay_query.iter_mut() {
-                commands.entity(entity).despawn();
+            // Remove sprite overlay if present
+            for (entity, _, _) in sprite_overlay_query.iter_mut() {
+                commands.entity(entity).despawn_recursive();
             }
-            for (entity, _) in text2d_query.iter_mut() {
-                commands.entity(entity).despawn();
+            // Remove text overlay if present
+            for (entity, _, _) in text_overlay_query.iter_mut() {
+                commands.entity(entity).despawn_recursive();
             }
             return;
         }
@@ -93,47 +102,57 @@ fn update_selection_overlay(
         let max = Vec2::new(start.x.max(end.x), start.y.max(end.y));
         let size = max - min;
         let rect_color = Color::srgba(0.2, 0.5, 1.0, 0.3); // translucent blue
-        let text = format!("x: {:.0}, y: {:.0}, w: {:.0}, h: {:.0}", min.x, min.y, size.x, size.y);
-        let mut found_overlay = false;
-        if let Ok((_entity, mut sprite, mut transform, _)) = overlay_query.single_mut() {
-            found_overlay = true;
+        let formatted_text = format!("x: {:.0}, y: {:.0}, w: {:.0}, h: {:.0}", min.x, min.y, size.x, size.y);
+
+        // Handle Sprite Overlay
+        if let Ok((_entity, mut sprite, mut transform)) = sprite_overlay_query.get_single_mut() {
             sprite.color = rect_color;
             sprite.custom_size = Some(size);
             transform.translation = min.extend(100.0); // z=100 to draw on top
-        }
-        let mut found_text = false;
-        for (_entity, mut text_comp) in text2d_query.iter_mut() {
-            found_text = true;
-            // Update the text string directly, since Text2d is a wrapper around String
-            *text_comp = text.clone().into();
-        }
-        if !found_overlay {
+        } else {
+            // Spawn new sprite overlay using individual components
             commands.spawn((
                 Sprite {
                     color: rect_color,
                     custom_size: Some(size),
-                    ..Default::default()
+                    ..default()
                 },
                 Transform::from_translation(min.extend(100.0)),
-                SelectionOverlay,
+                SelectionOverlay, // Marker for the sprite part
                 Name::new("Selection Overlay Rectangle"),
             ));
         }
-        if !found_text {
+
+        // Handle Text Overlay
+        let text_position = (min + size / 2.0 + Vec2::Y * 20.0).extend(101.0); // z=101 for text
+
+        if let Ok((_entity, mut text_2d_component, mut transform_component)) = text_overlay_query.get_single_mut() {
+            // Update existing text
+            text_2d_component.0 = formatted_text.clone(); // Update the String content of Text2d
+            transform_component.translation = text_position;
+        } else {
+            // Spawn new text overlay
             commands.spawn((
-                Text2d::new(text),
-                Transform::from_translation((min + size / 2.0 + Vec2::Y * 20.0).extend(101.0)),
-                SelectionOverlay,
+                Text2d::new(formatted_text.clone()), // Creates Text2d(String) component
+                TextFont {
+                    font: asset_server.load("fonts/FixederSys2x.ttf"), // Ensure this font is in assets
+                    font_size: 20.0,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                TextLayout::new_with_justify(JustifyText::Center), // Center text, corrected argument
+                Transform::from_translation(text_position),
+                SelectionOverlayText, // New marker for the text part
                 Name::new("Selection Overlay Text"),
             ));
         }
     } else {
-        // No selection, remove overlay if present
-        for (entity, _, _, _) in overlay_query.iter_mut() {
-            commands.entity(entity).despawn();
+        // No selection, remove overlays if present
+        for (entity, _, _) in sprite_overlay_query.iter_mut() {
+            commands.entity(entity).despawn_recursive();
         }
-        for (entity, _) in text2d_query.iter_mut() {
-            commands.entity(entity).despawn();
+        for (entity, _, _) in text_overlay_query.iter_mut() {
+            commands.entity(entity).despawn_recursive();
         }
     }
 }

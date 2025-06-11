@@ -130,7 +130,7 @@ pub struct WorldInspectorWindow;
 #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct WorldInspectorWindowEguiContextPass;
 
-const DEFAULT_SIZE: (f32, f32) = (320., 160.);
+const DEFAULT_SIZE: (f32, f32) = (550., 580.);
 
 fn ui(world: &mut World) -> Result {
     let mut ctx = world
