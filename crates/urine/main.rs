@@ -41,7 +41,13 @@ fn main() {
             mode: bevy_embedded_assets::PluginMode::ReplaceDefault,
         })
         .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: None,
+            primary_window: Some(
+                Window {
+                    decorations: false,
+                    transparent: true,
+                    ..default()
+                }
+            ),
             ..default()
         }))
         .add_plugins(SetupWindowsPlugin)

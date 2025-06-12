@@ -1,28 +1,34 @@
 use crate::cursor_position_plugin::CursorPosition;
-use bevy::input::mouse::MouseButton;
 use bevy::input::ButtonInput;
-use bevy::math::IRect;
-use bevy::math::IVec2;
+use bevy::input::mouse::MouseButton;
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
+use bevy::window::Window;
+use bevy_math_utils::prelude::NegativeYIVec2;
 
-#[derive(Resource, Debug, Clone, Reflect)]
+#[derive(Resource, Debug, Clone, Reflect, Copy)]
 #[reflect(Resource)]
 #[derive(Default)]
 pub enum SelectionState {
     #[default]
     NotStarted,
     Dragging {
-        rect_screen: IRect,
-        rect_world: IRect,
-        /// Initial point where drag started
-        start_screen: IVec2,
-        /// Initial point where drag started in world coords
-        start_world: IVec2,
+        start: Vec2,
+        end: Vec2,
     },
     Completed {
-        rect_screen: IRect,
-        rect_world: IRect,
+        start: Vec2,
+        end: Vec2,
     },
+}
+impl SelectionState {
+    pub fn rect(self) -> Option<Rect> {
+        match self {
+            SelectionState::NotStarted => None,
+            SelectionState::Dragging { start, end } => Some(Rect::from_corners(start, end)),
+            SelectionState::Completed { start, end } => Some(Rect::from_corners(start, end)),
+        }
+    }
 }
 
 fn region_selection_system(
@@ -30,52 +36,49 @@ fn region_selection_system(
     buttons: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
     cursor_position: Res<CursorPosition>,
+    windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    let (world_pos, screen_pos) = match &*cursor_position {
-        CursorPosition::Some { world, screen } => (*world, *screen),
-        _ => return,
+    let Some(cursor_world_position) = cursor_position.world_position.as_ref() else {
+        return;
     };
+    // Handle Ctrl+A to select the entire window
+    if (keys.pressed(KeyCode::ControlLeft) || keys.pressed(KeyCode::ControlRight))
+        && keys.just_pressed(KeyCode::KeyA)
+    {
+        if let Ok(window) = windows.single() {
+            match window.position {
+                bevy::window::WindowPosition::At(window_host_pos) => {
+                    let window_world_pos = window_host_pos.neg_y().as_vec2();
+                    let start = window_world_pos;
+                    let end = start + window.size();
+                    *state = SelectionState::Completed { start, end };
+                }
+                _ => {}
+            }
+        }
+    }
     match &mut *state {
         SelectionState::NotStarted => {
             if buttons.just_pressed(MouseButton::Left) {
-                let start_screen =
-                    IVec2::new(screen_pos.x.round() as i32, screen_pos.y.round() as i32);
-                let start_world =
-                    IVec2::new(world_pos.x.round() as i32, world_pos.y.round() as i32);
-
-                let rect_screen = IRect::from_corners(start_screen, start_screen);
-                let rect_world = IRect::from_corners(start_world, start_world);
-
                 *state = SelectionState::Dragging {
-                    rect_screen,
-                    rect_world,
-                    start_screen,
-                    start_world,
+                    start: *cursor_world_position,
+                    end: *cursor_world_position,
                 };
             }
         }
         SelectionState::Dragging {
-            rect_screen,
-            rect_world,
-            start_screen,
-            start_world,
+            start,
+            end,
         } => {
             if keys.just_pressed(KeyCode::Escape) {
                 *state = SelectionState::NotStarted;
             } else if buttons.pressed(MouseButton::Left) {
-                let current_screen =
-                    IVec2::new(screen_pos.x.round() as i32, screen_pos.y.round() as i32);
-                let current_world =
-                    IVec2::new(world_pos.x.round() as i32, world_pos.y.round() as i32);
-                *rect_screen = IRect::from_corners(*start_screen, current_screen);
-                *rect_world = IRect::from_corners(*start_world, current_world);
+                *end = *cursor_world_position;
             } else if buttons.just_released(MouseButton::Left) {
-                if rect_screen.min != rect_screen.max && rect_world.min != rect_world.max {
-                    let rect_screen = *rect_screen;
-                    let rect_world = *rect_world;
+                if *start != *end {
                     *state = SelectionState::Completed {
-                        rect_screen,
-                        rect_world,
+                        start: *start,
+                        end: *end,
                     };
                 } else {
                     *state = SelectionState::NotStarted;
@@ -86,17 +89,9 @@ fn region_selection_system(
             if keys.just_pressed(KeyCode::Escape) {
                 *state = SelectionState::NotStarted;
             } else if buttons.just_pressed(MouseButton::Left) {
-                let start_screen =
-                    IVec2::new(screen_pos.x.round() as i32, screen_pos.y.round() as i32);
-                let start_world =
-                    IVec2::new(world_pos.x.round() as i32, world_pos.y.round() as i32);
-                let rect_screen = IRect::from_corners(start_screen, start_screen);
-                let rect_world = IRect::from_corners(start_world, start_world);
                 *state = SelectionState::Dragging {
-                    rect_screen,
-                    rect_world,
-                    start_screen,
-                    start_world,
+                    start: *cursor_world_position,
+                    end: *cursor_world_position,
                 };
             }
         }

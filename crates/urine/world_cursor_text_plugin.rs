@@ -1,6 +1,7 @@
 use crate::cursor_position_plugin::CursorPosition;
 use bevy::prelude::*;
 use bevy::window::Monitor;
+use bevy_math_utils::prelude::NegativeYVec2;
 
 #[derive(Component)]
 struct WorldCursorText;
@@ -41,13 +42,17 @@ fn update_world_cursor_text_display(
     cursor_position: Res<CursorPosition>,
     mut query: Query<&mut Text2d, With<WorldCursorText>>,
 ) {
-    if let CursorPosition::Some { world, .. } = &*cursor_position {
-        for mut text in query.iter_mut() {
-            text.0 = format!("X: {:.0}, Y: {:.0}", world.x, world.y);
+    match &cursor_position.world_position {
+        Some(world) => {
+            let host = world.neg_y();
+            for mut text in query.iter_mut() {
+                text.0 = format!("X: {:.0}, Y: {:.0}", host.x, host.y);
+            }
         }
-    } else {
-        for mut text in query.iter_mut() {
-            text.0 = "X: ---, Y: ---".to_string();
+        None => {
+            for mut text in query.iter_mut() {
+                text.0 = "X: ---, Y: ---".to_string();
+            }
         }
     }
 }

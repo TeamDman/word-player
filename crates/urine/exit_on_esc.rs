@@ -15,7 +15,10 @@ fn exit_on_esc_system(
     mut exit: EventWriter<AppExit>,
     selection_state: Option<Res<SelectionState>>,
 ) {
-    if keys.just_pressed(KeyCode::Escape) {
+    if keys.just_pressed(KeyCode::Escape)
+        || keys.just_pressed(KeyCode::KeyC)
+            && (keys.pressed(KeyCode::ControlLeft) || keys.pressed(KeyCode::ControlRight))
+    {
         // Only exit if we're not in the middle of a selection
         // or if SelectionState resource doesn't exist yet
         match selection_state {

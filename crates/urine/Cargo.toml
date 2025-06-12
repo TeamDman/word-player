@@ -18,6 +18,7 @@ bevy-inspector-egui = "0.31.0"
 bevy_egui = "0.34.1"
 bevy_embedded_assets = "0.13.0"
 color-eyre = "0.6.5"
+bevy_math_utils = { path = "../bevy_math_utils" }
 
 [lib]
 path = "lib.rs"

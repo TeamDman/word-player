@@ -1,37 +1,28 @@
-// Renamed from world_cursor_plugin.rs
 use bevy::prelude::*;
+use bevy_math_utils::prelude::NegativeYVec2;
 
-#[derive(Resource, Debug, Clone, Reflect)]
+#[derive(Resource, Debug, Clone, Reflect, Default)]
 #[reflect(Resource)]
-#[derive(Default)]
-pub enum CursorPosition {
-    #[default]
-    None,
-    Some {
-        screen: Vec2,
-        world: Vec2,
-    },
+pub struct CursorPosition {
+    pub world_position: Option<Vec2>,
 }
 
-fn update_cursor_positions(
-    mut cursor_position: ResMut<CursorPosition>,
-    windows: Query<&Window>,
-) {
-    // Find the window under the cursor
+fn update_cursor_positions(mut cursor_position: ResMut<CursorPosition>, windows: Query<&Window>) {
     for window in windows.iter() {
         if let Some(cursor_pos) = window.cursor_position() {
-            // The window's position is the top-left in virtual screen coordinates
             let window_pos = match window.position {
                 bevy::window::WindowPosition::At(pos) => pos.as_vec2(),
-                _ => Vec2::ZERO,
+                _ => {
+                    unreachable!("Window position must be set to 'At' for cursor position tracking")
+                }
             };
-            let screen = window_pos + cursor_pos;
-            let world = Vec2::new(screen.x, -screen.y);
-            *cursor_position = CursorPosition::Some { screen, world };
+            let host = window_pos + cursor_pos;
+            let world = host.neg_y();
+            cursor_position.world_position = Some(world);
             return;
         }
     }
-    *cursor_position = CursorPosition::None;
+    cursor_position.world_position = None;
 }
 
 pub struct CursorPositionPlugin;

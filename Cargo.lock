@@ -1110,6 +1110,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_math_utils"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "bevy_mesh"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5968,6 +5975,7 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_egui",
  "bevy_embedded_assets",
+ "bevy_math_utils",
  "clap",
  "color-eyre",
  "serde_json",
