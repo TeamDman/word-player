@@ -1,11 +1,5 @@
 [workspace]
-members = [
-    "crates/urine",
-    "crates/screencap",
-    "crates/grid-ocr",
-    "crates/word-suggest",
-    "crates/word_player_shared"
-, "crates/pee"]
+members = ["crates/urine", "crates/pee"]
 resolver = "2"
 
 [workspace.package]
