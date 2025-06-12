@@ -3,7 +3,7 @@ param(
 )
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-$env:BEVY_ASSET_PATH = Join-Path $scriptDir 'assets'
+$env:BEVY_ASSET_PATH = Join-Path $scriptDir '../../assets'
 
 if ($release) {
     cargo build --release -p urine

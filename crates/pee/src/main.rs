@@ -75,6 +75,6 @@ fn main() -> eyre::Result<()> {
         );
     }
     // Optionally, save the texture to a file for debugging
-    texture.save("capture.png")?;
+    texture.save(&args.out)?;
     Ok(())
 }

@@ -1,6 +1,6 @@
 use crate::region_selection_plugin::SelectionState;
 use bevy::prelude::*;
-use bevy_math_utils::prelude::{NegativeYRect, TopLeft};
+use bevy_math_utils::prelude::NegativeYRect;
 
 #[derive(Component)]
 pub struct SelectionOverlay;

@@ -1,0 +1,20 @@
+[package]
+name = "piss"
+description = "Picture Interrogation and Stochastic Semantics"
+authors.workspace = true
+repository.workspace = true
+edition.workspace = true
+license.workspace = true
+version.workspace = true
+
+[dependencies]
+# image = { version = "0.25.6", features = ["serde"] }
+tracing = "0.1.41"
+eyre = "0.6.12"
+color-eyre = "0.6.5"
+clap = { version = "4.5.40", features = ["derive"] }
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+ollama-rs = "0.3.1"
+tokio = { version = "1.45.1", features = ["full"] }
+base64 = "0.22.1"
+itertools = "0.14.0"

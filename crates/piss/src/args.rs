@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::Parser;
 
 #[derive(Debug, Parser, Clone)]
@@ -12,11 +14,5 @@ pub struct GlobalArgs {
 pub struct Args {
     #[command(flatten)]
     pub global: GlobalArgs,
-    pub x: i32,
-    pub y: i32,
-    pub width: i32,
-    pub height: i32,
-    /// Output path for the captured image
-    #[arg(long, short, default_value = "capture.png")]
-    pub out: String,
+    pub image_path: PathBuf,
 }

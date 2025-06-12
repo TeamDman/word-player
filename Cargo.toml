@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/urine", "crates/pee"]
+members = ["crates/urine", "crates/pee", "crates/piss"]
 resolver = "2"
 
 [workspace.package]
